@@ -17,7 +17,6 @@ Library - приложение, для управления работы с кн
 - **Docker Compose**
   **Создайте файл  .env, в котором укажите необходимые данные для подключения к базе данных, а также secret key для генерации JWT токена**
 ```
-
 TOKENS_SECRET=your_secret_key
 DB_HOST=db
 DB_PORT=5432 
