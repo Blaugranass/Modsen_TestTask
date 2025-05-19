@@ -11,3 +11,18 @@ Library - приложение, для управления работы с кн
 - **AutoMapper**
 - **Docker, Docker Compose**
 - **XUnit**
+# Запуск через Docker Compose
+ **Требования**
+- **Docker**
+- **Docker Compose**
+  **Создайте файл  .env, в котором укажите необходимые данные для подключения к базе данных, а также secret key для генерации JWT токена**
+```
+
+TOKENS_SECRET=your_secret_key
+DB_HOST=db
+DB_PORT=5432 
+POSTGRES_PASSWORD=......
+POSTGRES_USER=......
+POSTGRES_DB=.......
+CONNECTION_STRING=Host=${DB_HOST};Port=${DB_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
+```
