@@ -28,7 +28,7 @@ namespace Library.API.Controllers
         public async Task<ActionResult> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken)
         {
             await service.DeleteAuthorAsync(id, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPatch("update/{id}")]
@@ -40,7 +40,7 @@ namespace Library.API.Controllers
         {
             dto = dto with {Id = id };
             await service.UpdateAuthorAsync(dto, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet("get-to-author/{id}")]
