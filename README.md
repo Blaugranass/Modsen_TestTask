@@ -26,3 +26,8 @@ POSTGRES_USER=......
 POSTGRES_DB=.......
 CONNECTION_STRING=Host=${DB_HOST};Port=${DB_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
 ```
+## Запуск
+Перейдите в директорию, где расположен docker-compose.yml и воспользуйтесь командой
+ ```
+docker-compose up --build
+ ```
