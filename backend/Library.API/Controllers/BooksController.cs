@@ -26,7 +26,7 @@ namespace Library.API.Controllers
         public async Task<ActionResult> DeleteBookAsync(Guid id, CancellationToken cancellationToken)
         {
             await bookService.DeleteBookAsync(id, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet("get/{id}")]
@@ -51,7 +51,7 @@ namespace Library.API.Controllers
         {
             dto = dto with { Id = id };
             await bookService.UpdateBookAsync(dto, cancellationToken);
-            return Ok();
+            return NoContent();
         }
 
         
@@ -61,7 +61,7 @@ namespace Library.API.Controllers
         public async Task<ActionResult> AddPicture(Guid id, [FromForm] AddPictureDto addPictureDto, CancellationToken cancellationToken)
         {
             await bookService.AddPictureAsync(id, addPictureDto.File, cancellationToken);
-            return Ok();
+            return NoContent();
         }
         
 
@@ -85,7 +85,7 @@ namespace Library.API.Controllers
             dto = dto with { BookId = id, UserId = userId };
 
             await bookService.TakeBookAsync(dto, cancellationToken);
-            return Ok();
+            return NoContent();
         }
     }
 }
