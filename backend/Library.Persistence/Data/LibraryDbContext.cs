@@ -12,11 +12,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
         base.OnModelCreating(builder);
 
         builder.ApplyConfigurationsFromAssembly(typeof(AuthorConfiguration).Assembly);
-        builder.ApplyConfigurationsFromAssembly(typeof(BookConfiguration).Assembly);
-        builder.ApplyConfigurationsFromAssembly(typeof(BorrowingBookConfiguration).Assembly);
-        builder.ApplyConfigurationsFromAssembly(typeof(GenreConfiguration).Assembly);
-        builder.ApplyConfigurationsFromAssembly(typeof(RefreshToken).Assembly);
-        builder.ApplyConfigurationsFromAssembly(typeof(AuthUserConfiguration).Assembly);
+        
     }
 
     public DbSet<Book> Books { get; set; }
