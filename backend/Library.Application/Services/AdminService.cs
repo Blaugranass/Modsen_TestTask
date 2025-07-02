@@ -1,5 +1,6 @@
 using Library.Application.DTOs.AdminDtos;
 using Library.Application.DTOs.TokenDtos;
+using Library.Application.Exceptions;
 using Library.Application.Interfaces.Repositories;
 using Library.Application.Interfaces.Services;
 using Library.Domain.Entities;
@@ -15,10 +16,10 @@ public class AdminService(
     public async Task<TokenResponse> LoginAdminAsync(LoginAdminDto loginAdminDto)
     {
         var authUser = await authUserRepository.GetByMailAsync(loginAdminDto.Mail) 
-            ?? throw new Exception($"Admin with {loginAdminDto.Mail} does not exist");
+            ?? throw new UnauthorizedException("Invalid credentials");
 
         if(authUser is not Admin admin)
-            throw new Exception($"User {loginAdminDto.Mail} is not an admin");
+            throw new ForbiddenException($"User with mail '{loginAdminDto.Mail}' is not an admin");
 
         var result = new PasswordHasher<Admin>()
             .VerifyHashedPassword(admin, admin.PassHash, loginAdminDto.Password);
@@ -39,7 +40,7 @@ public class AdminService(
         }
         else
         {
-            throw new Exception("Wrong password");
+            throw new UnauthorizedException("Invalid credentials");
         }
     }
 }

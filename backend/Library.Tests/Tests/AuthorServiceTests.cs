@@ -8,6 +8,7 @@ using Library.Application.Interfaces.Repositories;
 using Library.Application.Pagination;
 using Library.Application.Services;
 using Library.Domain.Entities;
+using Library.Application.Exceptions;
 using Moq;
 using Xunit;
 
@@ -30,19 +31,37 @@ namespace Library.Tests.Tests
             public async Task ShouldReturnAuthor_WhenAuthorExists()
             {
                 var authorId = Guid.NewGuid();
-                var expectedAuthor = new Author{
-                    Id = authorId,
+                var domainAuthor = new Author
+                {
+                    Id        = authorId,
                     FirstName = "John",
-                    LastName= "Doe",
-                    Birthday = DateOnly.FromDateTime(DateTime.Now),
-                    Country = "USA" };
+                    LastName  = "Doe",
+                    Birthday  = DateOnly.FromDateTime(DateTime.Now),
+                    Country   = "USA"
+                };
                 
-                _authorRepositoryMock.Setup(x => x.GetByIdAsync(authorId, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(expectedAuthor);
+                var expectedDto = new AuthorDto(
+                    Id        : authorId,
+                    FirstName : "John",
+                    LastName  : "Doe",
+                    Birthday  : DateOnly.FromDateTime(DateTime.Now),
+                    Country   : "USA"
+                );
 
-                var result = await _authorService.GetAuthorByIdAsync(authorId, CancellationToken.None);
+                _authorRepositoryMock
+                    .Setup(x => x.GetByIdAsync(authorId, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(domainAuthor);
 
-                Assert.Equal(expectedAuthor, result);
+                _mapperMock
+                    .Setup(m => m.Map<AuthorDto>(domainAuthor))
+                    .Returns(expectedDto);
+
+                
+                var result = await _authorService.GetAuthorByIdAsync(
+                    authorId, 
+                    CancellationToken.None);
+
+                Assert.Equal(expectedDto, result);
             }
 
             [Fact]
@@ -52,7 +71,7 @@ namespace Library.Tests.Tests
                 _authorRepositoryMock.Setup(x => x.GetByIdAsync(authorId, It.IsAny<CancellationToken>()))
                     .ReturnsAsync((Author)null);
 
-                await Assert.ThrowsAsync<KeyNotFoundException>(() => 
+                await Assert.ThrowsAsync<NotFoundException>(() => 
                     _authorService.GetAuthorByIdAsync(authorId, CancellationToken.None));
             }
         }
@@ -170,7 +189,7 @@ namespace Library.Tests.Tests
                 var expectedDtos = new PagedResult<BookResponseDto>(
                     new BookResponseDto[] 
                     { 
-                        new BookResponseDto(
+                        new (
                             books[0].Id,
                             books[0].ISBN,
                             books[0].Name,
@@ -215,7 +234,7 @@ namespace Library.Tests.Tests
                     It.IsAny<CancellationToken>()))
                     .ReturnsAsync((PagedResult<Book>)null);
 
-                await Assert.ThrowsAsync<NullReferenceException>(() => 
+                await Assert.ThrowsAsync<NotFoundException>(() => 
                     _authorService.GetBooksToAuthorAsync(authorId, pageParams, CancellationToken.None));
             }
         }

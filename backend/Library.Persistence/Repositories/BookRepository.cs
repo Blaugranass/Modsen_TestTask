@@ -8,44 +8,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Persistence.Repositories;
 
-public class BookRepository(LibraryDbContext dbContext) : IBookRepository
+public class BookRepository(LibraryDbContext dbContext) : BaseRepository<Book>(dbContext), IBookRepository
 {
-    public async Task CreateAsync(Book book, CancellationToken cancellationToken = default)
-    {
-        await dbContext.Books
-            .AddAsync(book, cancellationToken);
+    private readonly LibraryDbContext _dbContext = dbContext;
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+    public async Task<Book> GetByISBNAsync(string isbn,
+        CancellationToken cancellationToken = default)
+    {
+        return await FirstAsync(b => b.ISBN == isbn, cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Book book,
+        CancellationToken cancellationToken = default)
     {
-        await dbContext.Books
-            .Where(b => b.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task<Book> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Books
-            .AsNoTracking()
-            .Where(b => b.Id == id)
-            .FirstAsync(cancellationToken);
-    }
-
-    public async Task<Book> GetByISBNAsync(string isbn, CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Books
-            .AsNoTracking()
-            .Where(b => b.ISBN == isbn)
-            .FirstAsync(cancellationToken); 
-    }
-
-    public async Task UpdateAsync(Book book, CancellationToken cancellationToken = default)
-    {
-        await dbContext.Books
+        await _dbContext.Books
             .Where(b => b.Id == book.Id)
             .ExecuteUpdateAsync(pr => pr
             .SetProperty(b => b.ISBN, book.ISBN)
@@ -54,21 +30,16 @@ public class BookRepository(LibraryDbContext dbContext) : IBookRepository
             .SetProperty(b => b.ImageURL, book.ImageURL)
             .SetProperty(b => b.Name, book.Name),
             cancellationToken);
-        
-        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedResult<Book>> GetAsync(PageParams pageParams,
+        BookFilter filter,
+        CancellationToken cancellationToken = default)
     {
-        return await dbContext.Books
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
+        var predicate = filter.ToExpression();
 
-    public async Task<PagedResult<Book>> GetAsync(PageParams pageParams, BookFilter filter, CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Books
-            .AsNoTracking()
-            .ToPagedAsync(pageParams, cancellationToken);
+        return await GetPagedAsync(predicate,
+            pageParams,
+            cancellationToken);
     }
 }

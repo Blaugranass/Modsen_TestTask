@@ -2,6 +2,7 @@ using Library.Application.DTOs.AdminDtos;
 using Library.Application.DTOs.TokenDtos;
 using Library.Application.Interfaces.Services;
 using Library.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
@@ -20,6 +21,7 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("refresh")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<TokenResponse>> RefreshTokenAsync([FromBody] RefreshTokenDto tokenDto)
         {
             var tokens = await jwtService.RefreshTokenAsync(tokenDto.Token);

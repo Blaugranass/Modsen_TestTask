@@ -4,15 +4,9 @@ using Library.Domain.Entities;
 
 namespace Library.Application.Interfaces.Repositories;
 
-public interface IAuthorRepository
+public interface IAuthorRepository : IRepository<Author>
 {
-    Task<Author> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-
-    Task CreateAsync(Author author, CancellationToken cancellationToken = default);
-
     Task UpdateAsync(Author author, CancellationToken cancellationToken = default);
-
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<PagedResult<Book>> GetAllBooksToAuthorAsync(Guid authorId, PageParams pageParams, CancellationToken cancellationToken = default);
 

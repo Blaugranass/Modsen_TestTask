@@ -3,11 +3,10 @@ using Library.Domain.Entities;
 
 namespace Library.Application.Interfaces.Repositories;
 
-public interface IRefreshTokenRepository
+public interface IRefreshTokenRepository : IRepository<RefreshToken>
 {
-    Task<RefreshToken> GetByTokenAsync(string token);
+    Task<RefreshToken> GetByTokenAsync(string token, CancellationToken cancellationToken = default);
 
-    Task UpdateAsync(RefreshToken token);
+    Task UpdateAsync(RefreshToken token, CancellationToken cancellationToken = default);
 
-    Task CreateAsync(RefreshToken token);
 }

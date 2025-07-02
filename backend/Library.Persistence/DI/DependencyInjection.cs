@@ -1,4 +1,3 @@
-using System;
 using Library.Application.Interfaces.Repositories;
 using Library.Persistence.Data;
 using Library.Persistence.Repositories;
@@ -10,19 +9,26 @@ namespace Library.Persistence.DI;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services
+            .AddScoped<IAuthorRepository, AuthorRepository>()
+            .AddScoped<IAuthUserRepository, AuthUserRepository>()
+            .AddScoped<IBookRepository, BookRepository>()
+            .AddScoped<IBorrowingBookRepository, BorrowingBookRepository>()
+            .AddScoped<IGenreRepository, GenreRepository>()
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+        return services;
+
+    }
+
+    public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddDbContext<LibraryDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
-            .AddTransient<IAuthorRepository, AuthorRepository>()
-            .AddTransient<IAuthUserRepository, AuthUserRepository>()
-            .AddTransient<IBookRepository, BookRepository>()
-            .AddTransient<IBorrowingBookRepository, BorrowingBookRepository>()
-            .AddTransient<IGenreRepository,GenreRepository>()
-            .AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         return services;
-            
     }
 }

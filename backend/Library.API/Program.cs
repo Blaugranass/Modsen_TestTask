@@ -1,48 +1,36 @@
+using Library.API.DI;
 using Library.API.Middlewares;
 using Library.Application.DI;
 using Library.Persistence.DI;
-using Microsoft.OpenApi.Models;
+using Serilog;
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .Enrich.FromLogContext()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Console()
+    .CreateLogger();
+    
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog();
 builder.Configuration.AddEnvironmentVariables();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 builder.Services.AddControllers();
 
-builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddPersistence(builder.Configuration);
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "My API",
-        Version = "v1"
-    });
-
-    c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Insert bearer token"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "bearerAuth"
-                }
-            },
-            new List<string>()
-        }
-    });
-});
+builder.Services.AddAuthorization(builder.Configuration);
+builder.Services.AddAuthorizationPolicies();
+builder.Services.AddAutoMapper();
+builder.Services.AddServices();
+builder.Services.AddValidators();
+builder.Services.AddRepositories();
+builder.Services.AddDbContext(builder.Configuration);
+builder.Services.AddSwagger();
 
     
 var app = builder.Build();

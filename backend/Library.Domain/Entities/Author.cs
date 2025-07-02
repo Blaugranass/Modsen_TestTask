@@ -1,9 +1,7 @@
 namespace Library.Domain.Entities;
 
-public class Author
+public class Author : BaseEntity
 {
-    public Guid Id { get; set;}
-
     public string FirstName { get; set;} = string.Empty;
 
     public string LastName { get; set;} = string.Empty;

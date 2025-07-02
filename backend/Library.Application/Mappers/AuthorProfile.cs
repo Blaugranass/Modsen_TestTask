@@ -16,6 +16,8 @@ public class AuthorProfile : Profile
         CreateMap<UpdateAuthorDto, Author>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
+        CreateMap<AuthorDto, Author>();
+
         CreateMap<PagedResult<Author>, PagedResult<AuthorDto>>()
                 .ForCtorParam("data", opt => opt.MapFrom(src => src.Data))
                 .ForCtorParam("countElements", opt => opt.MapFrom(src => src.Count));

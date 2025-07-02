@@ -13,7 +13,7 @@ namespace Library.API.Controllers
     public class BorrowingBooksController(IBorrowingService service) : ControllerBase
     {
         [HttpGet("to-user")]
-        [Authorize(Roles = "User")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<ActionResult<PagedResult<BookResponseDto>>> GetAllBooksToUserAsync(
             [FromQuery] PageParams pageParams,
             CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace Library.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<PagedResult<BorrowingBookResponseDto>>> CheckAllBorrowingBooksAsync(
             [FromQuery] PageParams pageParams,
             CancellationToken cancellationToken)

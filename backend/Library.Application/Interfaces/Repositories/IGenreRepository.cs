@@ -2,7 +2,7 @@ using Library.Domain.Entities;
 
 namespace Library.Application.Interfaces.Repositories;
 
-public interface IGenreRepository
+public interface IGenreRepository : IRepository<Genre>
 {
-    Task<Genre> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default);
+
 }

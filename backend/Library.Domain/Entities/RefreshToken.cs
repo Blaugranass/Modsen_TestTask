@@ -2,10 +2,8 @@ using System;
 
 namespace Library.Domain.Entities;
 
-public class RefreshToken
+public class RefreshToken : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public required string Token { get; set; } 
 
     public DateTime Expires { get; set; }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Library.Application.DTOs.BookDtos;
 using Library.Application.DTOs.BorrowingBookDtos;
+using Library.Application.Exceptions;
 using Library.Application.Interfaces.Repositories;
 using Library.Application.Interfaces.Services;
 using Library.Application.Pagination;
@@ -25,7 +26,7 @@ public class BorrowingBookService(IBorrowingBookRepository BorrowingBookReposito
         CancellationToken cancellationToken = default)
     {
         var borrowingBooks = await BorrowingBookRepository.GetBorrowingBooksAsync(pageParams, cancellationToken)
-            ?? throw new NullReferenceException("No taken books");
+            ?? throw new NotFoundException("Taken Books not found");
 
         return mapper.Map<PagedResult<BorrowingBookResponseDto>>(borrowingBooks);
     }

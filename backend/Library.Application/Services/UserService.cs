@@ -1,6 +1,7 @@
 using AutoMapper;
 using Library.Application.DTOs.TokenDtos;
 using Library.Application.DTOs.UserDtos;
+using Library.Application.Exceptions;
 using Library.Application.Interfaces.Repositories;
 using Library.Application.Interfaces.Services;
 using Library.Domain.Entities;
@@ -17,10 +18,10 @@ public class UserService(
     public async Task<TokenResponse> LoginUserAsync(LoginUserDto loginUserDto)
     {
         var authUser = await authUserRepository.GetByMailAsync(loginUserDto.Mail) 
-            ?? throw new Exception($"User with mail {loginUserDto.Mail} not found");
+            ?? throw new UnauthorizedException("Invalid credentials");
 
         if(authUser is not User user)
-            throw new Exception($"User {loginUserDto.Mail} is not an admin");
+            throw new ForbiddenException($"User {loginUserDto.Mail} is not an admin");
 
         var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PassHash, loginUserDto.Password);
         
@@ -40,7 +41,7 @@ public class UserService(
         }
         else
         {
-            throw new Exception("Wrong password");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
     }
@@ -51,7 +52,7 @@ public class UserService(
 
         if(await authUserRepository.ExistWithMail(registerUserDto.Mail))
         {
-            throw new Exception("User with this mail already create");
+            throw new ConflictException($"User with this mail '{registerUserDto.Mail}' already create");
         }
         
         user.PassHash = new PasswordHasher<User>().HashPassword(user, registerUserDto.Password);

@@ -6,13 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Persistence.Repositories;
 
-public class GenreRepository(LibraryDbContext dbContext) : IGenreRepository
+public class GenreRepository(LibraryDbContext dbContext) : BaseRepository<Genre>(dbContext), IGenreRepository
 {
-    public async Task<Genre> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Genres
-            .AsNoTracking()
-            .Where(g => g.Id == Id)
-            .FirstAsync(cancellationToken);
-    }
+    
 }

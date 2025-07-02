@@ -14,9 +14,9 @@ namespace Library.API.Controllers
     public class AuthorsController(IAuthorService service) : ControllerBase
     {
         [HttpPost("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> CreateAuthorAsync(
-            [FromBody] CreateAuthorDto dto, 
+            [FromBody] CreateAuthorDto dto,
             CancellationToken cancellationToken)
         {
             await service.CreateAuthorAsync(dto, cancellationToken);
@@ -24,7 +24,7 @@ namespace Library.API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken)
         {
             await service.DeleteAuthorAsync(id, cancellationToken);
@@ -32,30 +32,30 @@ namespace Library.API.Controllers
         }
 
         [HttpPatch("update/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> UpdateAuthorAsync(
             Guid id,
-            [FromBody] UpdateAuthorDto dto, 
+            [FromBody] UpdateAuthorDto dto,
             CancellationToken cancellationToken)
         {
-            dto = dto with {Id = id };
+            dto = dto with { Id = id };
             await service.UpdateAuthorAsync(dto, cancellationToken);
             return NoContent();
         }
 
         [HttpGet("get-to-author/{id}")]
-        [Authorize(Roles = "Admin, User")]
+        [Authorize(Policy = "AdminOrUserPolicy")]
         public async Task<ActionResult<PagedResult<BookResponseDto>>> GetBooksToAuthorAsync(
             Guid id,
             [FromQuery] PageParams pageParams,
             CancellationToken cancellationToken)
         {
-            var books = await service.GetBooksToAuthorAsync(id, pageParams,cancellationToken);
+            var books = await service.GetBooksToAuthorAsync(id, pageParams, cancellationToken);
             return Ok(books);
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, User")]
+        [Authorize(Policy = "AdminOrUserPolicy")]
         public async Task<ActionResult<PagedResult<AuthorDto>>> GetAuthorsAsync(
             [AsParameters, FromQuery] AuthorFilter filter,
             [FromQuery] PageParams pageParams,
@@ -63,6 +63,14 @@ namespace Library.API.Controllers
         {
             var authors = await service.GetAuthorsAsync(filter, pageParams, cancellationToken);
             return Ok(authors);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Policy = "AdminOrUserPolicy")]
+        public async Task<ActionResult<AuthorDto>> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var author = await service.GetAuthorByIdAsync(id, cancellationToken);
+            return Ok(author);
         }
 
     }

@@ -14,7 +14,7 @@ namespace Library.API.Controllers
     public class BooksController(IBookService bookService) : ControllerBase
     {
         [HttpPost("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> CreateBookAsync([FromBody] CreateBookDto createBook, CancellationToken cancellationToken)
         {
             await bookService.CreateBookAsync(createBook, cancellationToken);
@@ -22,7 +22,7 @@ namespace Library.API.Controllers
         }
         
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> DeleteBookAsync(Guid id, CancellationToken cancellationToken)
         {
             await bookService.DeleteBookAsync(id, cancellationToken);
@@ -30,7 +30,7 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("get/{id}")]
-        [Authorize(Roles = "Admin, User")]
+        [Authorize(Policy = "AdminOrUserPolicy")]
         public async Task<ActionResult<BookResponseDto>> GetBookIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var book = await bookService.GetBookByIdAsync(id, cancellationToken);
@@ -38,7 +38,7 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("get-isbn/{isbn}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<BookResponseDto>> GetBookISBN(string isbn, CancellationToken cancellationToken)
         {
             var book = await bookService.GetBookByISBNAsync(isbn, cancellationToken);
@@ -46,7 +46,7 @@ namespace Library.API.Controllers
         }
         
         [HttpPatch("update/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> UpdateBookAsync(Guid id, [FromBody] UpdateBookDto dto, CancellationToken cancellationToken)
         {
             dto = dto with { Id = id };
@@ -57,7 +57,7 @@ namespace Library.API.Controllers
         
         [Consumes("multipart/form-data")]
         [HttpPost("add-picture/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult> AddPicture(Guid id, [FromForm] AddPictureDto addPictureDto, CancellationToken cancellationToken)
         {
             await bookService.AddPictureAsync(id, addPictureDto.File, cancellationToken);
@@ -66,7 +66,7 @@ namespace Library.API.Controllers
         
 
         [HttpGet]
-        [Authorize(Roles = "User, Admin")]
+        [Authorize(Policy = "AdminOrUserPolicy")]
         public async Task<ActionResult<PagedResult<BookResponseDto>>> GetBooksAsync(
             [FromQuery] PageParams pageParams,
             [AsParameters, FromQuery] BookFilter filter,
@@ -77,7 +77,7 @@ namespace Library.API.Controllers
         }
 
         [HttpPost("take/{id}")]
-        [Authorize(Roles = "User")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<ActionResult> TakeBookAsync(Guid id, [FromBody] TakeBookDto dto, CancellationToken cancellationToken)
         {
             var userIdClaim = HttpContext.User.FindFirst("userId")?.Value;

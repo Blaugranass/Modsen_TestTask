@@ -1,9 +1,7 @@
 namespace Library.Domain.Entities;
 
-public class Book
+public class Book : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public required string ISBN { get; set; }
 
     public required string Name { get; set; }

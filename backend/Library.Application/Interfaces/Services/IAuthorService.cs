@@ -8,7 +8,7 @@ namespace Library.Application.Interfaces.Services;
 
 public interface IAuthorService
 {
-    Task<Author> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<AuthorDto> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task CreateAuthorAsync(CreateAuthorDto dto, CancellationToken cancellationToken);
 
